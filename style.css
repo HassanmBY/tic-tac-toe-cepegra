@@ -6,10 +6,29 @@
     /* when set */
     --l: 10px;
     /* X line-width */
+    --bgColor: #fafafa;
 }
 
 body {
     margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    font-size: 1em;
+    background-color: var(--bgColor);
+    overflow: hidden;
+}
+
+h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 1.5em;
+    font-weight: normal;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 .board {
@@ -109,17 +128,29 @@ body {
 .winning-message {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-color: var(--color-set);
     justify-content: center;
     align-items: center;
-    color: white;
+    color: var(--bgColor);
     font-size: 5rem;
     font-family: 'Courier New', Courier, monospace;
     flex-direction: column;
+}
+
+.landing-page {
+    /* display: none; */
+    position: fixed;
+    inset: 0;
+    background-color: var(--color-set);
+    justify-content: center;
+    align-items: center;
+    color: var(--bgColor);
+    font-size: 5rem;
+    font-family: 'Courier New', Courier, monospace;
+    flex-direction: column;
+    z-index: 1;
+    text-align: center;
 }
 
 
@@ -135,10 +166,20 @@ body {
 .winning-message button {
     border-radius: 10px;
     font-size: 3rem;
-    background-color: white;
+    background-color: var(--bgColor);
     border: 1px solid var(--color-set);
     padding: .25em .5em;
     cursor: pointer;
+}
+
+.landing-page button {
+    border-radius: 10px;
+    font-size: 3rem;
+    background-color: var(--bgColor);
+    border: 1px solid var(--color-set);
+    padding: .25em .5em;
+    cursor: pointer;
+    margin-top: 6.725rem;
 }
 
 
@@ -146,6 +187,45 @@ body {
 
 .winning-message button:hover {
     background-color: var(--color-set);
-    color: white;
-    border-color: white;
+    color: var(--bgColor);
+    border-color: var(--bgColor);
+}
+
+.landing-page button:hover {
+    background-color: var(--color-set);
+    color: var(--bgColor);
+    border-color: var(--bgColor);
+}
+
+.landing-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.landing-form div * {
+    display: block;
+}
+
+.landing-form label {
+    font-size: 2rem;
+    margin-bottom: .5rem;
+}
+
+.landing-form input[type="text"] {
+    width: 100%;
+    height: 3rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-set);
+    padding: .25em .5em;
+    margin-bottom: .5rem;
+}
+
+.turn-text {
+    font-size: 2rem;
+    margin-block: .5rem;
+    color: #333;
+    margin-inline: auto;
+    text-align: center;
 }
