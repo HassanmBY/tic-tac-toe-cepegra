@@ -4,6 +4,8 @@
 //player name 😸
 //Result 😸
 
+//#region HOISTING
+
 const cells = document.querySelectorAll("[data-cell]"),
     board = document.querySelector(`[id="board"]`),
     winMessage = document.querySelector(`[id="winningMessageText"]`),
@@ -11,23 +13,34 @@ const cells = document.querySelectorAll("[data-cell]"),
     startButton = document.querySelector(`[id="startButton"]`),
     playerInputs = document.querySelectorAll("[data-player"),
     landingPage = document.querySelector(`[id="landingPage"]`),
-    turnText = document.querySelector(`[id="turnText"]`);
+    turnText = document.querySelector(`[id="turnText"]`),
+    table = document.querySelector(`[id="table"]`),
+    lightBox = document.querySelector(`[id="lightBox"]`),
+    scores = document.querySelector(`[id="scores"]`);
 
 let isXTurn = true,
     className = isXTurn ? "x" : "circle",
     cellIndices = Array(9).fill(null);
 
+//#endregion
+
+//#region GET PLAYER NAMES
 function getPlayerNames() {
-    if (playerInputs[0].value != "" && playerInputs[1].value != "") {
-        landingPage.style.display = "none";
-        init();
-    } else {
-        alert("Veuillez entrer un nom pour les deux joueurs");
+    if (playerInputs[0].value == "") {
+        playerInputs[0].value = "Anonymous 1";
     }
+
+    if (playerInputs[1].value == "") {
+        playerInputs[1].value = "Anonymous 2";
+    }
+    landingPage.style.display = "none";
+    init();
     return null;
 }
 startButton.addEventListener("click", getPlayerNames);
+//#endregion
 
+//#region INIT && TOGGLE TURN
 //initialize game
 function init() {
     //caclulate who's turn it is
@@ -49,6 +62,9 @@ function toggleClasses(e) {
     board.classList.add(className);
 }
 
+//#endregion
+
+//#region CLICK EVENT LISTENER
 function clickHandler(e) {
     //get index of clicked cell
     const index = Array.prototype.indexOf.call(cells, e.target);
@@ -63,8 +79,9 @@ function clickHandler(e) {
     }
 
     //check for winner or tie and display message
-    if (checkForWinner(cellIndices)) {
-        winMessage.innerHTML = `${checkForWinner(cellIndices)} est le gagnant!`;
+    if (checkForWinner(cellIndices) != null) {
+        let name = isXTurn ? playerInputs[0].value : playerInputs[1].value;
+        winMessage.innerHTML = `${name} est le gagnant!`;
         winMessage.parentElement.classList.add("show");
     } else if (cellIndices.includes(null) == false) {
         winMessage.innerHTML = `C'est une égalité!`;
@@ -81,6 +98,9 @@ function clickHandler(e) {
     toggleClasses();
 }
 
+//#endregion
+
+//#region CHECK FOR WINNER
 function checkForWinner(array) {
     const winCombos = [
         [0, 1, 2],
@@ -96,14 +116,27 @@ function checkForWinner(array) {
         const [a, b, c] = winCombos[i];
         if (array[a] && array[a] === array[b] && array[a] === array[c]) {
             //caclulate who's turn it is
-            let name = isXTurn ? playerInputs[0].value : playerInputs[1].value;
+            let name = isXTurn ? playerInputs[0].value : playerInputs[1].value,
+                tttName = "ttt" + name;
+            if (localStorage.getItem(tttName) === null) {
+                localStorage.setItem(
+                    tttName,
+                    JSON.stringify({ name: name, winCount: "1" })
+                );
+            } else {
+                let player = JSON.parse(localStorage.getItem(tttName));
+                player.winCount = +player.winCount + 1;
+                localStorage.setItem(tttName, JSON.stringify(player));
+            }
             //return winner
             return name;
         }
     }
     return null;
 }
+//#endregion
 
+//#region RESTART GAME
 function clearBoard() {
     for (const cell of cells) {
         cell.classList.remove("x");
@@ -118,3 +151,48 @@ function clearBoard() {
 }
 
 restartButton.addEventListener("click", clearBoard);
+
+//#endregion
+
+//#region SHOW SCORES
+function showScores() {
+    lightBox.classList.toggle("showLl");
+    let tr = document.createElement("tr");
+    let player = document.createElement("th");
+    player.innerText = "Joueur";
+    let winCount = document.createElement("th");
+    winCount.innerText = "Nombre de victoires";
+
+    table.innerHTML = "";
+    tr.appendChild(player);
+    tr.appendChild(winCount);
+    table.appendChild(tr);
+
+    for (let key of Object.keys(localStorage)) {
+        if (key.startsWith("ttt")) {
+            let slice = key.slice("3");
+            let keyArr = [];
+            keyArr.push(slice);
+            let row = document.createElement("tr");
+            for (const val of keyArr) {
+                let td = document.createElement("td");
+                let td2 = document.createElement("td");
+                td.innerText = val;
+                td2.innerText = JSON.parse(localStorage.getItem(key)).winCount;
+                row.appendChild(td);
+                row.appendChild(td2);
+            }
+            table.appendChild(row);
+        }
+    }
+    // for (let i = 0; i < localStorage.length; i++) {
+    //     let player = JSON.parse(localStorage.getItem(localStorage.key(i))),
+    //         name = player.name,
+    //         winCount = player.winCount,
+    //         row = document.createElement("tr");
+    //     row.innerText = `${localStorage.key(i)}`;
+    //     table.appendChild(row);
+    // }
+}
+
+scores.addEventListener("click", showScores);
